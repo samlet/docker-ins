@@ -1,0 +1,6 @@
+#!/bin/bash
+cd ~/IdeaProjects/NileUi
+gradle copyDist
+cd ~/apps/NileUi
+bin/NileUi -s
+
