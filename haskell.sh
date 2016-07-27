@@ -36,6 +36,16 @@ case "${opt}" in
 		docker exec -it $INSTANCE ghci
 	;;
 
+	"play" )
+		echo "open http://localhost:4001/"
+		docker run -it --rm --net=dev-net \
+			-v $HOME/works/haskell/tryhaskell:/app \
+			-p 4001:4001 \
+			-w /app \
+			nile/haskell ./runit.sh
+		# open "http://localhost:4001/"
+	;;
+
 	* ) 
 		echo "available options: new, init" $*
 	;;

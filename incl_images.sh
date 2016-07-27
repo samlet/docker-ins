@@ -16,6 +16,8 @@
 # nile/go-dev
 [ "$image" == "golang" ] && image="nile/go-dev"
 
+[ "$image" == "tomcat" ] && image="tomcat:8.5"
+
 
 [ "$image" == "mysql" ] && image="mysql:5.7"
 [ "$image" == "postgres" ] && image="postgres:9.5"

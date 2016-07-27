@@ -9,10 +9,21 @@ case "$CMD" in
 	"run")		
 		mvn package exec:java
 		;;
+
 	"call")
 		curl -i http://localhost:8080/myapp/myresource
 		echo ""
 		;;
+
+	"help" )
+		if [ $# -gt 1 ]; then	
+			section=$2
+			echo "help $section"
+		else
+			open "https://jersey.java.net/"
+		fi
+	;;
+	
 	*)
 		project=$CMD
 		mvn archetype:generate -DarchetypeArtifactId=jersey-quickstart-grizzly2 \

@@ -21,6 +21,7 @@ if [ $# -lt 1 ]; then
 	exit 0
 fi
 
+volume_name=nginx.store
 opt=$1
 
 case "${opt}" in
@@ -47,6 +48,10 @@ case "${opt}" in
 
 	"help")
 		open "https://hub.docker.com/_/nginx/"
+	;;
+
+	"vol.create")
+		docker volume create --name $volume_name
 	;;
 
 	* ) 
