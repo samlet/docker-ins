@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# https://github.com/akkadotnet/akka.net
+
+# Akka.NET is a community-driven port of the popular Java/Scala framework Akka to .NET.
+
+. $(dirname "$0")/../incl_opts.sh
+
+install () {
+  for p in "$@"
+    do
+      nuget install $p
+    done
+}
+
+#$ akka.net -i Akka Akka.Remote
+
+case "${opt_proc}" in
+    "echo" )
+      	echo "process ..."
+      	echoargs "${@:$argstart}"
+    ;;
+
+    "install" )
+		echo "start install ..."
+		install "${@:$argstart}"
+	;;
+    * )
+      echo "doesn't handle ${opt_proc}"
+    ;;
+esac
+
+#$ akka.net -q packages
+
+case "${preset}" in
+	"packages" )
+		# https://github.com/akkadotnet/akka.net
+		nuget install Akka
+		nuget install Akka.Remote
+		nuget install Akka.FSharp	# And if you need F# support 
+	;;
+	* )
+		echo "doesn't handle ${preset}"
+	;; 
+esac
+
+

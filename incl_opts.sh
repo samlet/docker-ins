@@ -1,14 +1,23 @@
-#!/bin/bash
+
+declare opt_proc="echo"
+declare preset="none"
 
 showopts () {
-  while getopts ":pq:" optname
+  # to add a option, add a shortcut character at first
+  while getopts ":piq:" optname   # shortcut characters
     do
       case "$optname" in
         "p")
           echo "  - Option $optname is specified"
+          opt_proc="proc"
+          ;;
+        "i")
+          echo "  - Option $optname is specified"
+          opt_proc="install"
           ;;
         "q")
           echo "  - Option $optname has value $OPTARG"
+          preset=$OPTARG
           ;;
         "?")
           echo "  * Unknown option $OPTARG"
@@ -32,19 +41,16 @@ showargs () {
     done
 }
 
-optinfo=$(showopts "$@")
+echoargs () {
+  for p in "$@"
+    do
+      echo "  - [$p]"
+    done
+}
+
+showopts "$@"
 argstart=$?
-arginfo=$(showargs "${@:$argstart}")
+arginfo=$(showargs "${@:$argstart}")    # only for display
 echo "Arguments are:"
 echo "$arginfo"
-echo "Options are:"
-echo "$optinfo"
-
-# $ ./testargs.sh -p -q qoptval abc "def ghi"
-# Arguments are:
-# [abc]
-# [def ghi]
-# Options are:
-# Option p is specified
-# Option q has value qoptval
 

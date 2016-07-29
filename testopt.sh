@@ -22,3 +22,22 @@ while getopts ":pq:" optname
     esac
     echo "OPTIND is now $OPTIND"
   done
+
+# [ian@pinguino ~]$ ./testopt.sh -p -q
+# OPTIND starts at 1
+# Option p is specified
+# OPTIND is now 2
+# No argument value for option q
+# OPTIND is now 3
+
+# [ian@pinguino ~]$ ./testopt.sh -p -q -r -s tuv
+# OPTIND starts at 1
+# Option p is specified
+# OPTIND is now 2
+# Option q has value -r
+# OPTIND is now 4
+# Unknown option s
+# OPTIND is now 5
+
+
+

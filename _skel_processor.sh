@@ -1,11 +1,14 @@
 #!/bin/bash
 
+declare opt_proc="echo"
+
 showopts () {
   while getopts ":pq:" optname
     do
       case "$optname" in
         "p")
           echo "  - Option $optname is specified"
+          opt_proc="proc"
           ;;
         "q")
           echo "  - Option $optname has value $OPTARG"
@@ -32,15 +35,32 @@ showargs () {
     done
 }
 
-optinfo=$(showopts "$@")
+echoargs () {
+  for p in "$@"
+    do
+      echo "  - [$p]"
+    done
+}
+
+showopts "$@"
 argstart=$?
-arginfo=$(showargs "${@:$argstart}")
+arginfo=$(showargs "${@:$argstart}")    # only for display
 echo "Arguments are:"
 echo "$arginfo"
-echo "Options are:"
-echo "$optinfo"
 
-# $ ./testargs.sh -p -q qoptval abc "def ghi"
+# echo "opt_proc is $opt_proc"
+case "${opt_proc}" in
+    "echo" )
+      echo "process ..."
+      echoargs "${@:$argstart}"
+    ;;
+
+    * )
+      echo "doesn't handle ${opt_proc}"
+    ;;
+esac
+
+# $ process.sh -p -q qoptval abc "def ghi"
 # Arguments are:
 # [abc]
 # [def ghi]

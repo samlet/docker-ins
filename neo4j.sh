@@ -36,6 +36,15 @@ case "${opt}" in
 		 	$IMAGE 
 	;;
 
+	"s" )
+		docker start $INSTANCE
+		docker logs -f $INSTANCE
+	;;
+
+	"stop" )
+		docker stop $INSTANCE
+	;;
+
 	"admin" )
 		open http://localhost:7474
 	;;

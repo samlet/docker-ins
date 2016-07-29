@@ -53,6 +53,15 @@ case "${opt}" in
 		fi
 	;;
 
+	"s" )
+		docker start $INSTANCE
+		docker logs -f $INSTANCE
+	;;
+
+	"stop" )
+		docker stop $INSTANCE
+	;;
+	
 	"help" )
 		if [ $# -gt 1 ]; then	
 			section=$2

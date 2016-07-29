@@ -32,6 +32,13 @@ showargs () {
     done
 }
 
+processargs () {
+  for p in "$@"
+    do
+      echo "  - [$p]"
+    done
+}
+
 optinfo=$(showopts "$@")
 argstart=$?
 arginfo=$(showargs "${@:$argstart}")
@@ -40,7 +47,10 @@ echo "$arginfo"
 echo "Options are:"
 echo "$optinfo"
 
-# $ ./testargs.sh -p -q qoptval abc "def ghi"
+echo "dockerize ..."
+processargs "${@:$argstart}"
+
+# $ dockerize.sh -p -q qoptval abc "def ghi"
 # Arguments are:
 # [abc]
 # [def ghi]
