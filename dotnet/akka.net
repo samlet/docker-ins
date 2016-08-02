@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
+
 # https://github.com/akkadotnet/akka.net
+# http://www.infoq.com/cn/news/2016/07/akka-dotnet
 
 # Akka.NET is a community-driven port of the popular Java/Scala framework Akka to .NET.
 

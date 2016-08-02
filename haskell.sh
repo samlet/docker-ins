@@ -31,9 +31,21 @@ case "${opt}" in
 		 	$IMAGE bash
 	;;
 
+	"local.init" )
+		brew install ghc cabal-install && \
+			cabal update && \
+			cabal install ghc-mod && \
+			ghci
+
+	;;
+
 	"repl" )
 		docker start $INSTANCE
 		docker exec -it $INSTANCE ghci
+	;;
+
+	"l.repl" )
+		ghci
 	;;
 
 	"play" )

@@ -64,8 +64,14 @@ case "${opt}" in
 		# being documented in the package repository, 
 		# and the opam-depext tool should take care of that for you
 		if docker start $INSTANCE > /dev/null; then
-			$EXEC opam depext -i cohttp lwt ssl core utop
+			$EXEC opam depext -i cohttp lwt ssl core utop \
+				pgocaml
 		fi
+	;;
+
+	"local.deps" )
+		opam install pgocaml	# http://opam.ocaml.org/packages/pgocaml/pgocaml.2.3/
+		
 	;;
 
 	"help" )

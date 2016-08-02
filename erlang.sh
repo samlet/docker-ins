@@ -44,7 +44,7 @@ case "${opt}" in
 		fi
 	;;
 
-	"run" )
+	"docker.run" )
 		if docker start $INSTANCE > /dev/null; then
 			if [ $# -gt 1 ]; then	
 				section=$2
@@ -71,6 +71,15 @@ case "${opt}" in
 		if [ $# -gt 1 ]; then	
 			section=$2
 			rebar3 new app $section
+		fi
+	;;
+
+	"run" )
+		if [ $# -gt 1 ]; then	
+			section=$2
+			echo "compile and run ${section}.erl"
+			erlc ${section}.erl
+			erl -noshell -s $section start -s init stop
 		fi
 	;;
 
