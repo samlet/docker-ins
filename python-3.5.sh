@@ -65,8 +65,13 @@ case "${opt}" in
 	;;
 
 	"deps" )
+		# execute this section on project folder
 		if docker start $INSTANCE > /dev/null; then
-			$EXEC pip install redis
+			# $EXEC pip install redis
+			full_path=$(pwd)
+			docker_path=${full_path/#${HOME}/}
+			$EXEC sh -c "cd $docker_path ; \
+				pip install -r requirements.txt"
 		fi
 	;;
 
@@ -77,6 +82,23 @@ case "${opt}" in
 
 	"stop" )
 		docker stop $INSTANCE
+	;;
+
+	"practice" )
+		# top_dir=/works/python/practice/v3
+		if [ $# -gt 2 ]; then	
+			section=$2
+			full_path=$3
+			docker_path=${full_path/#${HOME}/}
+			# echo "$HOME"
+			# echo "$full_path"
+			# echo "$docker_path"
+			if docker restart $INSTANCE > /dev/null; then
+				echo "🐪 execute in container $INSTANCE"
+				docker exec -i $INSTANCE sh -c "cd $docker_path ;\
+				 python $section"
+			fi
+		fi
 	;;
 	
 	"help" )
