@@ -15,9 +15,12 @@ gen(){
 	# programming language constructive elements
 	echo "generate $1 in $2"
 	cd $2
-	for script in basic flows strings converters collections comprehensions \
+	for script in basic flows strings buffers converters \
+		collections comprehensions \
 		pattern_matchings math_ops datetime_ops \
-		functions functors objects typeof_ops async net_procs \
+		functions functors objects typeof_ops \
+		console_procs \
+		async net_procs processes \
 		io_procs databases json_procs xml_procs message_procs \
 		cli_procs error_procs concurrent_procs ; do
 		# echo "create $script"			
@@ -65,6 +68,7 @@ case "${opt}" in
 
 		gen ".swift" 	"$work_dir/swift/practice"
 		gen ".rs" 		"$work_dir/rust/practice"
+		gen ".go" 		"$work_dir/golang/practice"
 		gen ".cc" 		"$work_dir/cc/practice"
 		gen ".c" 		"$work_dir/c/practice"
 

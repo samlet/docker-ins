@@ -3,6 +3,7 @@
 [ "$image" == "centos" ] && image="centos:7"
 [ "$image" == "dev" ] && image="nile/dev"
 
+[ "$image" == "gcc" ] && image="gcc:6.1"
 [ "$image" == "ocaml" ] && image="ocaml/opam"
 [ "$image" == "java" ] && image="java:8"
 [ "$image" == "erlang" ] && image="erlang:19"
