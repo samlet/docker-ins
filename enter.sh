@@ -55,7 +55,13 @@ case "${image}" in
 		fi
 	;;
 
-	alpine|busybox )
+	alpine|busybox|php:7.0-alpine )
+		docker run $name -it -v $(pwd):/app \
+			$NETWORK -w /app $port \
+			$image sh
+	;;
+
+	nile/curl)
 		docker run $name -it -v $(pwd):/app \
 			$NETWORK -w /app $port \
 			$image sh

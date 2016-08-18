@@ -10,7 +10,7 @@ WORKDIR=${WORKDIR:-"/works/rust"}
 EXEC="docker exec -it $INSTANCE"
 
 ########################
-# jruby container
+# rust container
 ########################
 
 if [ $# -lt 1 ]; then	
@@ -85,6 +85,16 @@ case "${opt}" in
 			echo "compile and run ${section}.rs"
 			rustc ${section}.rs
 			./$section
+		fi
+	;;
+
+	"run.stub" )
+		if [ $# -gt 1 ]; then	
+			section=$2
+			echo "compile and run ${section}.rs"
+			cp ${section}.rs ./macros/src/main.rs
+			cd ./macros
+			cargo run
 		fi
 	;;
 

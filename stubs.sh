@@ -19,12 +19,12 @@ gen(){
   echo "generate $1 in $2"
   cd $2
 
-  mkdir -p micros
-  for script in practice basic flows strings buffers converters \
+  mkdir -p micros ffi
+  for script in practice basic flows strings regex_procs buffers converters \
     collections comprehensions reflection_ops \
     pattern_matchings math_ops datetime_ops \
     functions functors objects typeof_ops \
-    console_procs \
+    console_procs debugutils \
     async net_procs processes \
     io_procs filesystems \
     databases json_procs xml_procs message_procs \
@@ -49,6 +49,45 @@ gen(){
   done
 }
 
+compose_dev(){
+read -d '' composefile <<EOF
+version: "2"
+
+services:
+  app:
+    image: ubuntu:16.04
+    command: bash -c "sleep 10"
+    volumes:
+      - .:/app
+      - $HOME/works/ubuntu/xenial/in-docker.list:/etc/apt/sources.list
+    ports:
+      - "5000:80"
+    depends_on:
+      - redis
+    networks:
+      - front-tier
+      - back-tier
+
+  redis:
+    image: redis
+    ports: ["6379"]
+    networks:
+      - back-tier
+
+networks:
+    front-tier:
+    back-tier:
+EOF
+
+  fileName=docker-compose.yml
+  if [ -e $fileName ]; then
+    echo "$fileName has already exists"
+  else
+    echo "$composefile" > $fileName
+    echo "created."
+  fi
+}
+
 compose_ruby(){
 read -d '' composefile <<EOF
 version: "2"
@@ -56,6 +95,7 @@ version: "2"
 services:
   app:
     image: ruby:2.3
+    command: ruby simple.rb
     volumes:
       - .:/app
     ports:
@@ -99,6 +139,7 @@ case "${opt}" in
     "practice.all" )    
     gen ".java"   "$work_dir/java/practice" 
     gen ".scala"  "$work_dir/scala/scripts" 
+    gen ".clj"    "$work_dir/clojure/practice" 
 
     gen ".ml"     "$work_dir/ocaml/practice" 
     gen ".hs"     "$work_dir/haskell/practice" 
@@ -109,12 +150,18 @@ case "${opt}" in
     gen ".rb"     "$work_dir/ruby/practice" 
     gen ".sh"     "$work_dir/shell/practice"    
     gen ".js"     "$work_dir/node.js/practice/basic"
+    gen ".php"    "$work_dir/php/practice"    
 
     gen ".swift"  "$work_dir/swift/practice"
     gen ".rs"     "$work_dir/rust/practice"
     gen ".go"     "$work_dir/golang/practice"
     gen ".cc"     "$work_dir/cc/practice"
-    gen ".c"    "$work_dir/c/practice"
+    gen ".c"      "$work_dir/c/practice"
+
+    gen ".fs"     "$work_dir/dotnet/practice" 
+    gen ".cs"     "$work_dir/dotnet/practice" 
+
+    # julia, r, scheme, common lisp, groovy
 
     echo ""
     echo "🐨 total absents: $total_absents / $total, 🐌 is absent file."
@@ -161,20 +208,28 @@ case "${opt}" in
       arginfo="${@:$argstart}"
       opt=$2
       case "$opt" in
+        "dev")
+          compose_dev $(pwd)
+          docker-compose up
+        ;;
         "ruby")
           compose_ruby $(pwd)
         ;;
 
         "django")
-          exec $incl_dir/docker-gens/gen-django.sh $arginfo
+          exec bash $incl_dir/docker-gens/gen-django.sh $arginfo
         ;;
+        "rails")
+          exec bash $incl_dir/docker-gens/gen-rails.sh $arginfo
+        ;;
+        
         * )          
           echo "unknown option $opt $arginfo"
         ;;
       esac
 
     else
-      echo "available prototypes: ruby, ..."
+      echo "available prototypes: ruby, django, ..."
     fi
   ;;
 

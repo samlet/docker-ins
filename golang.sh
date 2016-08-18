@@ -1,16 +1,17 @@
 #!/bin/bash
 
-set -e
+# set -e
 
+# https://hub.docker.com/_/golang/
 
-INSTANCE=${INSTANCE:-"cc-dev"}
-IMAGE=${IMAGE:-"nile/dev"}
-WORKDIR=${WORKDIR:-"/works/cc"}
+INSTANCE=${INSTANCE:-"golang-dev"}
+IMAGE=${IMAGE:-"golang:1.7"}
+WORKDIR=${WORKDIR:-"/works/golang"}
 
 EXEC="docker exec -it $INSTANCE"
 
 ########################
-# jruby container
+# golang container
 ########################
 
 if [ $# -lt 1 ]; then	
@@ -21,6 +22,7 @@ fi
 
 incl_dir="$(dirname "$0")"
 docker_ins=$HOME/bin/docker-ins
+ubuntu_container="$INSTANCE"
 
 opt=$1
 
@@ -33,19 +35,14 @@ case "${opt}" in
     ;;
 
     "init" )
-		# docker volume create --name elasticsearch-volume
-		
+		docker volume create --name golang.root		
 		docker run -it --net=dev-net --name $INSTANCE \
 			 -v $HOME/works:/works \
-			 -v $docker_ins:/docker-ins \
-			 -v $HOME/caches/dev:/root \
-			 -v $HOME/caches/include:/usr/local/include \
-			 $IMAGE bash
-
-		## contains: build-essential, cmake, python
-		## for microservice served framework:
-		#	apt-get install libboost-dev libboost-system-dev libre2-dev ragel
-
+			 -v golang.root:/root \
+			 -v $HOME/go/src:/go/src \
+			 -e GOPATH=/go \
+			 -w $WORKDIR \
+			  $IMAGE /bin/bash
 	;;
 
 	"repl" )
@@ -60,40 +57,44 @@ case "${opt}" in
 		fi
 	;;
 
-	"run.cc" )
+	"s" )
+		docker start $INSTANCE
+		docker logs -f $INSTANCE
+	;;
+
+	"stop" )
+		docker stop $INSTANCE
+	;;
+
+	"run" )
 		if [ $# -gt 1 ]; then	
 			program=$2
-			g++ -std=c++11 -pthread $program.cc -o $program
-			./$program
+			killall $program > /dev/null
+			echo "build $program ..."
+			export GOPATH=$HOME/go			
+			go build $program.go
+			cp $program $HOME/bin/mac/$program
+			rm $program
+
+			echo "run $program ..."
+			$HOME/bin/mac/$program
 		fi
 	;;
 
-	"c++17" )
-		if [ $# -gt 1 ]; then	
-			program=$2
-			docker run --rm -i \
-				--net=dev-net \
-				-v $(pwd):/app \
-				-w /app \
-				gcc:6.1 sh -c "g++ -std=c++1z -pthread $program.cc -o $program && \
-					./$program \
-				"
-		fi
-	;;
 
 	"c.init" )
 		image="ubuntu:16.04"
-		docker run --name=c.ubuntu -it \
+		docker run --name=$ubuntu_container -it \
 				--net=dev-net \
 				-v $HOME/works:/works \
 				-v $HOME/bin/docker-ins:/docker-ins \
 				-v $HOME/works/ubuntu/xenial/in-docker.list:/etc/apt/sources.list \
-				-w /works/c \
+				-w /works \
 				$image bash
 	;;
 
 	"c.enter" )
-		docker start -i c.ubuntu
+		docker start -i $ubuntu_container
 	;;
 
 	"c.exec" )
@@ -103,11 +104,12 @@ case "${opt}" in
 			full_path=$3
 			docker_path=${full_path/#${HOME}/}
 
-			cmd="cd $docker_path ; gcc -std=c11 -pthread $program.c -o $program && \
-						./$program \
-					"
-			if docker restart c.ubuntu > /dev/null; then
-				docker exec -i c.ubuntu sh -c "$cmd"
+			cmd="cd $docker_path ; \
+				go build $program.go && \
+				./$program \
+				"
+			if docker restart $ubuntu_container > /dev/null; then
+				docker exec -i $ubuntu_container sh -c "$cmd"
 			fi
 		fi
 	;;
@@ -115,23 +117,19 @@ case "${opt}" in
 	"c.single" )
 		if [ $# -gt 1 ]; then	
 			program=$2
-			docker run --rm -i \
+			container_name="go.$program"
+			docker rm -f $container_name > /dev/null
+			docker run -d \
+				--name=$container_name \
 				--net=dev-net \
+				-p 8080:8080 \
 				-v $(pwd):/app \
 				-w /app \
-				gcc:6.1 sh -c "gcc -std=c11 -pthread $program.c -o $program && \
+				golang:1.7 sh -c "go build $program.go && \
 					./$program \
 				"
+			docker logs -f $container_name
 		fi
-	;;
-
-	"s" )
-		docker start $INSTANCE
-		docker logs -f $INSTANCE
-	;;
-
-	"stop" )
-		docker stop $INSTANCE
 	;;
 	
 	"help" )
