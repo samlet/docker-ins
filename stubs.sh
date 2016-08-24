@@ -20,10 +20,12 @@ gen(){
   cd $2
 
   mkdir -p micros ffi
-  for script in practice basic flows strings regex_procs buffers converters \
+  # loader 用于指示在REPL上加载脚本
+  for script in practice primitive_types basic flows strings regex_procs \
+    buffers converters \
     collections comprehensions reflection_ops \
     pattern_matchings math_ops datetime_ops \
-    functions functors objects typeof_ops \
+    functions functors objects modules loader typeof_ops \
     console_procs debugutils \
     async net_procs processes \
     io_procs filesystems \
@@ -126,6 +128,37 @@ EOF
   fi
 }
 
+write_batch(){
+read -d '' cnt <<EOF
+#!/usr/bin/env bash
+echo "start ..."
+EOF
+
+  fileName=$1
+  if [ -e $fileName ]; then
+    echo "$fileName has already exists"
+  else
+    echo "$cnt" > $fileName
+    echo "created."
+  fi
+}
+
+write_readme(){
+  header=$1
+read -d '' cnt <<EOF
+$header
+================
+
+EOF
+
+  fileName=$2
+  if [ -e $fileName ]; then
+    echo "$fileName has already exists"
+  else
+    echo "$cnt" > $fileName
+    echo "created."
+  fi
+}
 
 case "${opt}" in
     "practice" )
@@ -174,7 +207,10 @@ case "${opt}" in
         folder=$dbtype/docker-ins/$manage
         echo "create folder $folder"
         mkdir -p $folder
+        write_batch $folder/$manage.sh
       done
+
+      write_readme "$dbtype" "$dbtype/docker-ins/README.md"
     done
   ;;
 
@@ -197,6 +233,7 @@ case "${opt}" in
         folder=$interact/docker-ins/$manage
         echo "create folder $folder"
         mkdir -p $folder
+        write_batch $folder/$manage.sh
       done
     done
 

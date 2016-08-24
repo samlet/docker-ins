@@ -58,8 +58,10 @@ case "${opt}" in
 	;;
 
 	"repl" )
-		# http://wiki.apache.org/cassandra/GettingStarted
-		$EXEC cqlsh
+		if docker start $INSTANCE > /dev/null; then
+			# http://wiki.apache.org/cassandra/GettingStarted
+			$EXEC cqlsh
+		fi
 	;;
 
 	"daemon" )

@@ -11,6 +11,7 @@
 [ "$image" == "python" ] && image="python:3.5"
 [ "$image" == "ruby" ] && image="ruby:2.3"
 [ "$image" == "php" ] && image="php:7.0-alpine"
+[ "$image" == "rust" ] && image="scorpil/rust:1.9"
 # haskell:8
 [ "$image" == "haskell" ] && image="haskell:8"
 # nile/elixir:1.2

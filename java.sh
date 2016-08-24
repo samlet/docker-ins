@@ -1,16 +1,15 @@
 #!/bin/bash
 
-set -e
+# set -e
 
-
-INSTANCE=${INSTANCE:-"php-dev"}
-IMAGE=${IMAGE:-"nile/dev"}
-WORKDIR=${WORKDIR:-"/works/php"}
+INSTANCE=${INSTANCE:-"java-dev"}
+IMAGE=${IMAGE:-"java:8"}
+WORKDIR=${WORKDIR:-"/works/java"}
 
 EXEC="docker exec -it $INSTANCE"
 
 ########################
-# php container
+# java container
 ########################
 
 if [ $# -lt 1 ]; then	
@@ -21,7 +20,7 @@ fi
 
 incl_dir="$(dirname "$0")"
 docker_ins=$HOME/bin/docker-ins
-ubuntu_container=$INSTANCE
+ubuntu_container=c.ubuntu
 
 opt=$1
 
@@ -34,39 +33,12 @@ case "${opt}" in
     ;;
 
     "init" )
-		# docker volume create --name elasticsearch-volume		
+		# docker volume create --name elasticsearch-volume
 		docker run -it --net=dev-net --name $INSTANCE \
 			-v $HOME/works:/works \
-		 	-v $HOME/caches/dev:/root \
-		 	-v $docker_ins:/docker-ins \
+			-v $docker_ins:/docker-ins \
 			-w $WORKDIR \
-		  	$IMAGE bash
-
-		## contains: 
-		##	inherits init-dev: build-essential, cmake, python
-		## 	contains: curl, vim, nginx, php7.0-fpm, php
-		##		'php -v' -> PHP 7.0.4-7ubuntu2 (cli) ( NTS )
-
-		## 	apt-get -y install php7.0-mysql php7.0-curl php7.0-gd 
-		## 		php7.0-intl php-pear php-imagick php7.0-imap 
-		## 		php7.0-mcrypt php-memcache  php7.0-pspell 
-		## 		php7.0-recode php7.0-sqlite3 php7.0-tidy 
-		## 		php7.0-xmlrpc php7.0-xsl php7.0-mbstring php-gettext
-
-		##	additional: php-apcu, php-redis
-
-		## initialize steps:
-		#	clear_env = no
-		#
-		#	[www]
-		#	listen = [::]:9000
-		#	
-		#	append above lines to /etc/php/7.0/fpm/php-fpm.conf 
-
-		## start line:
-		# php-fpm7.0 -d variables_order="EGPCS" && \
-		#	(tail -F /var/log/nginx/access.log &) && \
-		#	exec nginx -c `pwd`/nginx-dev.conf -g "daemon off;"
+		 	$IMAGE bash
 	;;
 
 	"repl" )
@@ -107,15 +79,15 @@ case "${opt}" in
 	;;
 
 	"c.exec" )
-		# exec redis_simple.php: $ php.sh c.exec redis_simple $(pwd)
+		# exec basic.c: $ cc.sh c.exec basic $(pwd)
 		if [ $# -gt 2 ]; then	
 			program=$2
 			full_path=$3
 			docker_path=${full_path/#${HOME}/}
 
-			echo "execute $program.php in container $ubuntu_container ..."
 			cmd="cd $docker_path ; \
-				php $program.php
+				gcc -std=c11 -pthread $program.c -o $program && \
+				./$program \
 				"
 			if docker restart $ubuntu_container > /dev/null; then
 				docker exec -i $ubuntu_container sh -c "$cmd"
@@ -140,6 +112,29 @@ case "${opt}" in
 		fi
 	;;
 	
+	"run" )
+		if [ $# -gt 1 ]; then	
+			section=$2
+			echo "compile and run ${section}.java"
+			javac -cp .:deps.jar ${section}.java
+			java -cp .:deps.jar $section
+		fi
+	;;
+
+	"run.stub" )		
+		topdir=$HOME/works/java/practice
+		if [ $# -gt 1 ]; then	
+			echo "kill old process ..."
+			kill `jps | grep Launcher | cut -f1 -d" "`  > /dev/null
+
+			section=$2
+			echo "compile and run ${section}.java ..."
+			cp ${section}.java $topdir/deps/src/main/java/exec/Main.java
+			cd $topdir/deps			
+			mvn compile exec:java -Dexec.mainClass="exec.Main"
+		fi
+	;;
+
 	"help" )
 		if [ $# -gt 1 ]; then	
 			section=$2

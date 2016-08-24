@@ -33,18 +33,17 @@ case "${opt}" in
     ;;
 
     "init" )
-		# docker volume create --name elasticsearch-volume
+		docker volume create --name rust.root
 		docker run -it --net=dev-net --name $INSTANCE \
 		 	 -v $docker_ins:/docker-ins \
 		 	 -v $HOME/works:/works \
-			 -v $HOME/caches/dev:/root \
-			 -v $HOME/caches/include:/usr/local/include \
+			 -v rust.root:/root \
 			 -w $WORKDIR \
 			 $IMAGE bash
 
 		## base image: debian:jessie
 		## install packages
-		##	apt-get install libsnappy-dev
+		##	apt-get install libsnappy-dev libssl-dev
 
 		## for rust-bindgen (Clang >= 3.5): https://github.com/crabtw/rust-bindgen
 		#	apt-get install clang libclang-dev liblua5.2-dev lua5.2 

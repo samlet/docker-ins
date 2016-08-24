@@ -46,9 +46,18 @@ case "${opt}" in
 		## for microservice served framework:
 		#	apt-get install libboost-dev libboost-system-dev libre2-dev ragel
 
+		# ...
+		# 	apt-get install python-pip
+		# https://github.com/conan-io/conan
+		#	pip install conan
+
 	;;
 
 	"repl" )
+		$HOME/works/cc/cling_2016-08-23_mac1011/bin/cling
+	;;
+
+	"repl.docker" )
 		if docker start $INSTANCE > /dev/null; then
 			$EXEC redis-cli
 		fi
@@ -63,19 +72,71 @@ case "${opt}" in
 	"run.cc" )
 		if [ $# -gt 1 ]; then	
 			program=$2
-			g++ -std=c++11 -pthread $program.cc -o $program
+			g++ -std=c++11 -pthread \
+				-L. -lredox -lev -lhiredis \
+			 	$program.cc -o $program
 			./$program
 		fi
 	;;
 
-	"c++17" )
+	"run.cmake" )
+		if [ $# -gt 1 ]; then	
+			topdir=$HOME/works/cc/practice
+			section=$2
+
+			# test accomplish program
+			client_program="${section/server/client}"
+			if test "$client_program" != "$section"; then			
+				if [ -s $client_program ]; then
+					echo "client program $client_program exists."
+					cp ${client_program} $topdir/cmake/client.cxx
+				fi
+			fi
+
+			echo "compile and run ${section}"
+			cp ${section} $topdir/cmake/main.cxx
+			cd $topdir/cmake/build
+			cmake ..
+			make
+
+			( ./practice & )
+			if test "$client_program" != "$section"; then
+				( ./client )
+			fi
+		fi
+	;;
+
+	"c++11" )
+		std_level="c++11"
+		image="gcc:4.9"
+
+		echo "compile with $image $std_level ..."
+		
 		if [ $# -gt 1 ]; then	
 			program=$2
 			docker run --rm -i \
 				--net=dev-net \
 				-v $(pwd):/app \
 				-w /app \
-				gcc:6.1 sh -c "g++ -std=c++1z -pthread $program.cc -o $program && \
+				$image sh -c "g++ -std=$std_level -pthread $program.cc -o $program && \
+					./$program \
+				"
+		fi
+	;;
+
+	"c++17" )
+		std_level="c++1z"
+		image="gcc:6.1"
+		libs="-pthread"
+		echo "compile with $image $std_level ..."
+		
+		if [ $# -gt 1 ]; then	
+			program=$2
+			docker run --rm -i \
+				--net=dev-net \
+				-v $(pwd):/app \
+				-w /app \
+				$image sh -c "g++ -std=$std_level $libs $program.cc -o $program && \
 					./$program \
 				"
 		fi

@@ -43,9 +43,9 @@ case "${opt}" in
 			 -e GOPATH=/go \
 			 -w $WORKDIR \
 			  $IMAGE /bin/bash
-	;;
+	;;	
 
-	"repl" )
+	"repl.docker" )
 		if docker start $INSTANCE > /dev/null; then
 			$EXEC redis-cli
 		fi
@@ -67,6 +67,7 @@ case "${opt}" in
 	;;
 
 	"run" )
+		# golang
 		if [ $# -gt 1 ]; then	
 			program=$2
 			killall $program > /dev/null
@@ -98,6 +99,7 @@ case "${opt}" in
 	;;
 
 	"c.exec" )
+		# golang-exec
 		# exec basic.c: $ cc.sh c.exec basic $(pwd)
 		if [ $# -gt 2 ]; then	
 			program=$2
@@ -115,6 +117,7 @@ case "${opt}" in
 	;;
 
 	"c.single" )
+		# golang-docker
 		if [ $# -gt 1 ]; then	
 			program=$2
 			container_name="go.$program"

@@ -93,8 +93,40 @@ case "${opt}" in
 			# echo "$HOME"
 			# echo "$full_path"
 			# echo "$docker_path"
-			if docker restart $INSTANCE > /dev/null; then
-				echo "🐪 execute in container $INSTANCE"
+			echo "🐪 execute in container $INSTANCE ..."
+			if docker restart $INSTANCE > /dev/null; then				
+				docker exec -i $INSTANCE sh -c "cd $docker_path ;\
+				 python $section"
+			fi
+		fi
+	;;
+
+	"micros" )
+		container_name="python-micros"
+		if container_procs.py -c $container_name exists > /dev/null; then
+			echo "$container_name ok ..."
+		else
+			# initiaize this container and install dependencies
+			docker volume create --name python3.root
+			docker run -d --net=dev-net --name $container_name \
+				-p 3000:3000 \
+				-p 5000:5000 \
+			 	-v python3.root:/root \
+				-v $HOME/works/rust/practice/macros.linux/target/release/macros:/app/macros \
+			  	$IMAGE /app/macros
+
+			# install libraries
+			docker exec -i $container_name sh -c "apt-get update"
+			pip install redis flask
+		fi
+
+		if [ $# -gt 2 ]; then	
+			section=$2
+			full_path=$3
+			docker_path=${full_path/#${HOME}/}
+
+			echo "$container_name starting ..."
+			if docker restart $container_name > /dev/null; then				
 				docker exec -i $INSTANCE sh -c "cd $docker_path ;\
 				 python $section"
 			fi

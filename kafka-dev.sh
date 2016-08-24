@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+
+# https://hub.docker.com/r/wurstmeister/kafka/
+# https://github.com/wurstmeister/kafka-docker
+# wurstmeister/kafka:0.10.0.0
+# wurstmeister/kafka:0.8.2.2
+
+
 set -e
 
 export KAFKA_ADVERTISED_HOST_NAME=`ifconfig en0 | grep 'inet ' | awk '{ print $2}'`
