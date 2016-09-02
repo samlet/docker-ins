@@ -1,15 +1,16 @@
 #!/bin/bash
 
-# set -e
+set -e
 
-INSTANCE=${INSTANCE:-"java-dev"}
-IMAGE=${IMAGE:-"java:8"}
-WORKDIR=${WORKDIR:-"/works/java"}
+
+INSTANCE=${INSTANCE:-"dotnet-dev"}
+IMAGE=${IMAGE:-"microsoft/dotnet"}
+WORKDIR=${WORKDIR:-"/works/dotnet"}
 
 EXEC="docker exec -it $INSTANCE"
 
 ########################
-# java container
+# dotnet container
 ########################
 
 if [ $# -lt 1 ]; then	
@@ -33,12 +34,15 @@ case "${opt}" in
     ;;
 
     "init" )
-		# docker volume create --name elasticsearch-volume
+		docker volume create --name dotnet.root
+		
 		docker run -it --net=dev-net --name $INSTANCE \
 			-v $HOME/works:/works \
-			-v $docker_ins:/docker-ins \
-			-w $WORKDIR \
-		 	$IMAGE bash
+			-v dotnet.root:/root \
+			-w /works/dotnet \
+			  $IMAGE /bin/bash
+
+			## base image: debian:jessie
 	;;
 
 	"repl" )
@@ -111,44 +115,20 @@ case "${opt}" in
 			docker logs -f $container_name
 		fi
 	;;
+
+	"run.stub" )
+		topdir=$HOME/works/dotnet/practice
+		if [ $# -gt 1 ]; then	
+			section=$2
+			echo "compile and run ${section}.cs with dotnet ..."
+			cp ${section}.cs $topdir/dotnet-core/Program.cs
+			cd $topdir/dotnet-core			
+			# run it
+			dotnet run
+
+		fi
+	;;
 	
-	"run" )
-		if [ $# -gt 1 ]; then	
-			section=$2
-			echo "compile and run ${section}.java"
-			javac -cp .:deps.jar ${section}.java
-			java -cp .:deps.jar $section
-		fi
-	;;
-
-	"run.stub" )		
-		topdir=$HOME/works/java/practice
-		if [ $# -gt 1 ]; then	
-			echo "kill old process ..."
-			kill `jps | grep Launcher | cut -f1 -d" "`  > /dev/null 2>&1
-
-			section=$2
-			echo "compile and run ${section}.java ..."
-			cp ${section}.java $topdir/deps.maven/src/main/java/exec/Main.java
-			cd $topdir/deps.maven
-			mvn --quiet compile exec:java -Dexec.mainClass="exec.Main"
-		fi
-	;;
-
-	"run.gradle" )		
-		topdir=$HOME/works/java/practice
-		if [ $# -gt 1 ]; then	
-			echo "kill old process ..."
-			kill `jps | grep GradleMain | cut -f1 -d" "`  > /dev/null 2>&1
-
-			section=$2
-			echo "compile and run ${section}.java with gradle ..."
-			cp ${section}.java $topdir/deps.gradle/src/main/java/exec/Main.java
-			cd $topdir/deps.gradle
-			gradle run
-		fi
-	;;
-
 	"help" )
 		if [ $# -gt 1 ]; then	
 			section=$2

@@ -75,17 +75,23 @@ case "${image}" in
 		else
 			echo "create new container with image $image"	
 			root_vol=""
+			curr_vol="-v $(pwd):/app -w /app"
+			action="run"
+
 			if [ "$container_name" != "unknown_container" ]; then
 				root_vol="-v ${container_name}.root:/root"
+				curr_vol="-w /root"
 				docker volume create --name ${container_name}.root
 				echo "create volume for root folder: $root_vol"
+
+				action="create"
 			fi
 
-			docker run $name -it \
+			docker $action $name -it \
 				-v $HOME/works:/works \
-				-v $(pwd):/app $root_vol \
+				$curr_vol $root_vol \
 				-v $HOME/bin/docker-ins:/docker-ins \
-				$NETWORK -w /app $port \
+				$NETWORK $port \
 				$image bash
 
 			# ubuntu special process		
@@ -96,6 +102,7 @@ case "${image}" in
 					"cp /works/ubuntu/xenial/aliyun.list /etc/apt/sources.list &&
 						apt-get update
 					"
+				echo "attach console, press return."
 				docker attach $container_name
 			fi
 		fi

@@ -88,12 +88,19 @@ case "${opt}" in
 	;;
 
 	"run.stub" )
+		topdir=$HOME/works/rust/practice
 		if [ $# -gt 1 ]; then	
 			section=$2
-			echo "compile and run ${section}.rs"
-			cp ${section}.rs ./macros/src/main.rs
-			cd ./macros
+			echo "compile and run ${section}.rs with cargo ..."
+			cp ${section}.rs $topdir/macros/src/main.rs
+			cd $topdir/macros			
+			# run it
 			cargo run
+
+			# dist it 
+			distloc="$HOME/bin/mac/$section"			
+			cp $topdir/macros/target/debug/macros $distloc
+			echo "dist to $distloc ok."
 		fi
 	;;
 

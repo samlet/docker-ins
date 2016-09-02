@@ -26,9 +26,9 @@ gen(){
     collections comprehensions reflection_ops \
     pattern_matchings math_ops datetime_ops \
     functions functors objects modules loader typeof_ops \
-    console_procs debugutils \
+    console_procs debugutils logger_procs \
     async net_procs processes \
-    io_procs filesystems \
+    io_procs filesystems httpclients httpservices \
     databases json_procs xml_procs message_procs \
     cli_procs error_procs concurrent_procs ; do
     # echo "create $script"     
@@ -191,7 +191,7 @@ case "${opt}" in
     gen ".cc"     "$work_dir/cc/practice"
     gen ".c"      "$work_dir/c/practice"
 
-    gen ".fs"     "$work_dir/dotnet/practice" 
+    gen ".fs"     "$work_dir/dotnet/practice_fs" 
     gen ".cs"     "$work_dir/dotnet/practice" 
 
     # julia, r, scheme, common lisp, groovy

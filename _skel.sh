@@ -16,7 +16,7 @@ case "$CMD" in
 		;;	
 	"backup")
 		if [ $# -gt 2 ]; then	
-			# 
+			echo "backup ..."
 		else
 			echo "use: volumes backup container-name volumn-folder-name"
 		fi

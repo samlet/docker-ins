@@ -93,16 +93,32 @@ case "${opt}" in
 				fi
 			fi
 
-			echo "compile and run ${section}"
+			echo "compile and run ${section} with cmake ..."
 			cp ${section} $topdir/cmake/main.cxx
 			cd $topdir/cmake/build
 			cmake ..
 			make
 
-			( ./practice & )
+			distloc="$HOME/bin/mac/$section"
+			cp ./practice $distloc
+
+			( ./practice --logtostderr=1 & )
 			if test "$client_program" != "$section"; then
-				( ./client )
+				( ./client --logtostderr=1 )
 			fi
+		fi
+	;;
+
+	"cmake" )
+		if [ $# -gt 1 ]; then
+			section=$2
+			mkdir -p build
+			cd build
+			cmake ..
+			make
+
+			cd ..
+			bash ./exec.sh
 		fi
 	;;
 

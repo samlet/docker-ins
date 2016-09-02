@@ -1,15 +1,16 @@
 #!/bin/bash
 
-# set -e
+set -e
 
-INSTANCE=${INSTANCE:-"java-dev"}
-IMAGE=${IMAGE:-"java:8"}
-WORKDIR=${WORKDIR:-"/works/java"}
+
+INSTANCE=${INSTANCE:-"t.grpc"}
+IMAGE=${IMAGE:-"ubuntu:16.04"}
+WORKDIR=${WORKDIR:-"/works/grpc"}
 
 EXEC="docker exec -it $INSTANCE"
 
 ########################
-# java container
+# jruby container
 ########################
 
 if [ $# -lt 1 ]; then	
@@ -112,43 +113,6 @@ case "${opt}" in
 		fi
 	;;
 	
-	"run" )
-		if [ $# -gt 1 ]; then	
-			section=$2
-			echo "compile and run ${section}.java"
-			javac -cp .:deps.jar ${section}.java
-			java -cp .:deps.jar $section
-		fi
-	;;
-
-	"run.stub" )		
-		topdir=$HOME/works/java/practice
-		if [ $# -gt 1 ]; then	
-			echo "kill old process ..."
-			kill `jps | grep Launcher | cut -f1 -d" "`  > /dev/null 2>&1
-
-			section=$2
-			echo "compile and run ${section}.java ..."
-			cp ${section}.java $topdir/deps.maven/src/main/java/exec/Main.java
-			cd $topdir/deps.maven
-			mvn --quiet compile exec:java -Dexec.mainClass="exec.Main"
-		fi
-	;;
-
-	"run.gradle" )		
-		topdir=$HOME/works/java/practice
-		if [ $# -gt 1 ]; then	
-			echo "kill old process ..."
-			kill `jps | grep GradleMain | cut -f1 -d" "`  > /dev/null 2>&1
-
-			section=$2
-			echo "compile and run ${section}.java with gradle ..."
-			cp ${section}.java $topdir/deps.gradle/src/main/java/exec/Main.java
-			cd $topdir/deps.gradle
-			gradle run
-		fi
-	;;
-
 	"help" )
 		if [ $# -gt 1 ]; then	
 			section=$2

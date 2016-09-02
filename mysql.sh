@@ -61,12 +61,15 @@ case "${opt}" in
 
 	"repl" )
 		if docker start $INSTANCE > /dev/null; then
+			docker exec some-mysql mysqladmin --silent --wait=30 -uroot -proot ping || exit 1
 			$EXEC mysql -uroot -proot
 		fi
 	;;
 
 	"databases" )
 		if docker start $INSTANCE > /dev/null; then
+			echo "Waiting for DB to start up..."  
+			docker exec some-mysql mysqladmin --silent --wait=30 -uroot -proot ping || exit 1
 			$EXEC mysql -uroot -proot -e "show databases;"
 		fi
 	;;
@@ -97,6 +100,19 @@ case "${opt}" in
 				)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 				CREATE UNIQUE INDEX t_quiz_IDX_0 on t_user(name);"
 			$EXEC mysql -uroot -proot --database=test -e "$SEQ"
+		fi
+	;;
+
+	"load" )
+		if [ $# -gt 2 ]; then
+			docker start some-mysql
+			docker exec some-mysql mysqladmin --silent --wait=30 -uroot -proot ping || exit 1
+
+			db=$2
+			file=$3
+			docker exec -i some-mysql mysql -uroot -proot $db < $file  
+		else
+			echo "syntax: - load <db> <file.sql>"
 		fi
 	;;
 

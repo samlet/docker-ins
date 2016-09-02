@@ -1,7 +1,6 @@
 #!/bin/bash
 
-set -e
-
+# set -e
 
 INSTANCE=${INSTANCE:-"python-3.5"}
 IMAGE=${IMAGE:-"python:3.5"}
@@ -22,9 +21,9 @@ fi
 incl_dir="$(dirname "$0")"
 docker_ins=$HOME/bin/docker-ins
 
-source "$HOME/works/python/v3/myenv/bin/activate"
-PATH=$HOME/works/python/v3:$PATH 
+# source "$HOME/works/python/v3/myenv/bin/activate"
 export PYTHONPATH=$HOME/bin/python
+PATH=$HOME/works/python/v3:$PATH 
 
 opt=$1
 
@@ -84,6 +83,16 @@ case "${opt}" in
 		docker stop $INSTANCE
 	;;
 
+	"run" )
+		if [ $# -gt 1 ]; then	
+			killall Python > /dev/null 2>&1
+
+			section=$2
+			echo "compile and run ${section}.py ..."
+			python3 ${section}.py			
+		fi
+	;;
+	
 	"practice" )
 		# top_dir=/works/python/practice/v3
 		if [ $# -gt 2 ]; then	
