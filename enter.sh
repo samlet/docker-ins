@@ -45,6 +45,12 @@ case "${image}" in
 
 	"list.c" )
 		container_procs.py -c t. list
+
+	;;
+
+	"list.none")
+		docker images | grep "^<none>" | awk "{print $3}"
+		echo "NOTE: 直接使用 docker rmi <image-id> 就可以删除, 如果提示有容器使用了该image, 则先使用rm删除这个容器."
 	;;
 
 	"rm.c" )

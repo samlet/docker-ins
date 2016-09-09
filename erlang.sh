@@ -75,11 +75,23 @@ case "${opt}" in
 	;;
 
 	"run" )
+		topdir=$HOME/works/erlang/practice
 		if [ $# -gt 1 ]; then	
 			section=$2
 			echo "compile and run ${section}.erl"
 			erlc ${section}.erl
-			erl -noshell -s $section start -s init stop
+
+			libpath=" "
+			for lib in $(ls $topdir/myapp/_build/default/lib); do
+				libpath="$libpath $topdir/myapp/_build/default/lib/$lib/ebin/"
+			done
+			# eredis="myapp/_build/default/lib/eredis/ebin/"
+			# echo "--> $libpath"
+
+			ext="$HOME/works/erlang/practice_elixir/_build/dev/lib/practice_elixir/ebin"
+			libpath="$libpath $ext"
+
+			erl -noshell -pa $libpath -s $section start -s init stop
 		fi
 	;;
 

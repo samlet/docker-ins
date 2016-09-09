@@ -79,6 +79,25 @@ else
 	        exit
 	    ;;
 
+	    "tables" )
+			if [ $# -gt 1 ]; then
+				SEQ="
+					SELECT
+					    table_schema || '.' || table_name
+					FROM
+					    information_schema.tables
+					WHERE
+					    table_type = 'BASE TABLE'
+					AND
+					    table_schema NOT IN ('pg_catalog', 'information_schema');
+				    "
+				docker exec -it $INSTANCE psql -U $USER -d $2 -c "$SEQ"
+			else
+				echo "must assign database name, available databases:"
+				exec postgres.sh list
+			fi
+		;;
+
 	    "browse" )
 			echo "open browser to query specific table."
 		;;

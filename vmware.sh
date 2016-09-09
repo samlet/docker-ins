@@ -18,16 +18,16 @@ ubuntu_file="/Users/xiaofeiwu/Documents/Virtual Machines.localized/Ubuntu 64 位
 auth="-gu xiaofeiwu -gp xiaofeiwu"
 
 case "$CMD" in
-	"ubuntu")		
+	"start")		
 		vmrun start "$ubuntu_file" nogui
 		sleep 1
 		vmrun list
 		;;
-	"ubuntu.stop")
+	"stop")
 		# 
 		vmrun stop "$ubuntu_file" soft
 		;;	
-	"ubuntu.reboot")
+	"reboot")
 		vmrun reset "$ubuntu_file" soft
 		;;
 
@@ -38,13 +38,19 @@ case "$CMD" in
 		vmrun $auth listProcessesInGuest "$ubuntu_file"
 		;;
 
-	"share")
-		
+	"ssh")
+		ssh dev
+		;;
+
+	"share.init")
+		# only execute once
+
 		# 前题: Installing VMware Tools from the Command Line with the Tar Installer
 		# https://www.vmware.com/support/ws55/doc/ws_newguest_tools_linux.html#wp1127177
 
 		echo "enable ..."
-		vmrun -T fusion enableSharedFolders "$ubuntu_file" runtime
+		# vmrun -T fusion enableSharedFolders "$ubuntu_file" runtime
+		vmrun -T fusion enableSharedFolders "$ubuntu_file" 
 		echo "share ..."
 		vmrun -T fusion addSharedFolder "$ubuntu_file" share_folder "$HOME/tmp"
 		echo "success, browse the folder ..."
@@ -58,11 +64,32 @@ case "$CMD" in
 		vmrun -T fusion removeSharedFolder "$ubuntu_file" share_folder 
 		;;
 
+	"mount.list")
+		vmrun $auth listDirectoryInGuest "$ubuntu_file" "/mnt/hgfs/"
+		;;
+	"mount")
+		# example: vmware.sh mount async $(pwd)
+		if [ $# -gt 2 ]; then	
+			echo "mount $2 to $3 ..."
+			vmrun -T fusion addSharedFolder "$ubuntu_file" $2 "$3"
+		fi
+		;;
+	"umount")
+		if [ $# -gt 1 ]; then	
+			echo "umount $2 to $3 ..."
+			vmrun -T fusion removeSharedFolder "$ubuntu_file" $2 
+		fi
+		;;
 	"exec")
 		if [ $# -gt 1 ]; then	
 			echo "exec script $2 ..."
 			vmrun $auth runProgramInGuest "$ubuntu_file" /bin/bash /mnt/hgfs/share_folder/$2
 		fi
+		;;
+	"+local")
+		TARGET=/works/cc/linux.ubuntu.1604
+		SOURCE_ROOT=dev:/usr/local
+		rsync -avz --progress --delete $SOURCE_ROOT $TARGET
 		;;
 	"backup")
 		if [ $# -gt 2 ]; then	
@@ -73,5 +100,6 @@ case "$CMD" in
 		;;
 	*)
 		echo "no such command: $CMD"
+		echo "available commands: start, stop, reboot, list, list.procs, mount.list, mount, umount, exec, +local, share.browse"
 		;;
 esac

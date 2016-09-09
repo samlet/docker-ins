@@ -70,15 +70,21 @@ case "${opt}" in
 		# golang
 		if [ $# -gt 1 ]; then	
 			program=$2
-			killall $program > /dev/null
+			killall $program > /dev/null 2>&1
 			echo "build $program ..."
 			export GOPATH=$HOME/go			
 			go build $program.go
 			cp $program $HOME/bin/mac/$program
 			rm $program
-
-			echo "run $program ..."
-			$HOME/bin/mac/$program
+			
+			file=$program.run
+			if [ -e "$file" ]; then
+			    echo "execute $file ..."
+			    bash $file
+			else 
+			    echo "run $program ..."
+			    $HOME/bin/mac/$program
+			fi 			
 		fi
 	;;
 

@@ -28,7 +28,7 @@ gen(){
     functions functors objects modules loader typeof_ops \
     console_procs debugutils logger_procs \
     async net_procs processes \
-    io_procs filesystems httpclients httpservices \
+    io_procs os_procs filesystems httpclients httpservices \
     databases json_procs xml_procs message_procs \
     cli_procs error_procs concurrent_procs ; do
     # echo "create $script"     

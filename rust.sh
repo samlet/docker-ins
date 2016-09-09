@@ -88,6 +88,7 @@ case "${opt}" in
 	;;
 
 	"run.stub" )
+		killall macros > /dev/null 2>&1 || echo "fresh!"
 		topdir=$HOME/works/rust/practice
 		if [ $# -gt 1 ]; then	
 			section=$2

@@ -21,6 +21,7 @@ fi
 
 incl_dir="$(dirname "$0")"
 docker_ins=$HOME/bin/docker-ins
+mirror_sources="-v $HOME/works/ubuntu/xenial/in-docker.list:/etc/apt/sources.list"
 
 opt=$1
 
@@ -84,6 +85,14 @@ case "${opt}" in
 			topdir=$HOME/works/cc/practice
 			section=$2
 
+			file=CMakeLists.txt
+			if [ -e "$file" ]; then
+			    echo "re-exec with $file ..."
+			    exec cc.sh cmake $section
+			    # skip leave
+			    exit 0
+			fi
+
 			# test accomplish program
 			client_program="${section/server/client}"
 			if test "$client_program" != "$section"; then			
@@ -95,6 +104,8 @@ case "${opt}" in
 
 			echo "compile and run ${section} with cmake ..."
 			cp ${section} $topdir/cmake/main.cxx
+
+			mkdir -p $topdir/cmake/build
 			cd $topdir/cmake/build
 			cmake ..
 			make
@@ -200,6 +211,14 @@ case "${opt}" in
 					./$program \
 				"
 		fi
+	;;
+
+	"+local" )
+		echo "run c++ microservice docker with /usr/local ..."
+		docker run --rm -it --net=dev-net \
+				-v $(pwd):/app -w /app \
+				-v $HOME/works/cc/linux.ubuntu.1604/local:/usr/local \
+				nile/cc-micros bash
 	;;
 
 	"s" )
