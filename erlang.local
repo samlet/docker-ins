@@ -1,0 +1,15 @@
+docker run -it --net=dev-net --rm -h=n1 --name=n1 erlang:19 bash
+erl -sname foo -setcookie cookie
+
+docker run -it --net=dev-net --rm -h=n2 --name=n2 erlang:19 bash
+erl -sname bar -setcookie cookie
+
+###
+docker run -it --net=dev-net --rm -h=n1 --name=n1 \
+    erlang:19 erl -sname foo -setcookie cookie
+docker run -it --net=dev-net --rm -h=n2 --name=n2 \
+    erlang:19 erl -sname bar -setcookie cookie
+
+###
+net_kernel:connect_node('bar@n2').
+nodes().

@@ -4,7 +4,7 @@ set -e
 
 
 INSTANCE=${INSTANCE:-"swift-dev"}
-IMAGE=${IMAGE:-"ubuntu:14.04"}
+IMAGE=${IMAGE:-"nile/swift"}
 WORKDIR=${WORKDIR:-"/works/swift"}
 
 EXEC="docker exec -it $INSTANCE"
@@ -34,7 +34,7 @@ case "${opt}" in
 
     "init" )
 		# docker volume create --name elasticsearch-volume
-		docker run -it --net=dev-net --name $INSTANCE \
+		docker run -it --net=dev-net --privileged --name $INSTANCE \
 			-v $HOME/works:/works \
 			-v $docker_ins:/docker-ins \
 			-w $WORKDIR \
@@ -43,6 +43,15 @@ case "${opt}" in
 
 	"init.dev")
 		exec ~/opt/bin/swift-dev.sh
+	;;
+
+	"install.vapor")
+		# https://github.com/vapor/toolbox
+		# install Vapor Toolbox
+		brew install vapor/tap/toolbox
+
+		# Linux
+		# curl -sL toolbox.qutheory.io | bash
 	;;
 
 	"repl" )
@@ -72,6 +81,29 @@ case "${opt}" in
 
 	"stop" )
 		docker stop $INSTANCE
+	;;
+
+	"run.stub" )
+		# killall macros > /dev/null 2>&1 || echo "fresh!"
+		topdir=$HOME/works/swift/practice
+		if [ $# -gt 1 ]; then	
+			section=$2
+			echo "compile and run ${section}.swift with Package.swift ..."
+			cp ${section}.swift $topdir/socks-projs/Socks-1.0.1/Sources/Console/main.swift
+			cd $topdir/socks-projs/Socks-1.0.1			
+			swift build
+			# run it
+			# ./.build/debug/Console
+
+			# dist it 
+			distloc="$HOME/bin/mac/$section"			
+			cp $topdir/socks-projs/Socks-1.0.1/.build/debug/Console $distloc
+			# echo "dist to $distloc ok."
+
+			# run it
+			cd $topdir
+			exec $distloc
+		fi
 	;;
 
 	"help" )

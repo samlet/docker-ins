@@ -22,7 +22,7 @@ gen(){
   mkdir -p micros ffi
   # loader 用于指示在REPL上加载脚本
   for script in practice primitive_types basic flows strings regex_procs \
-    buffers converters \
+    buffers converters encoding_ops \
     collections comprehensions reflection_ops \
     pattern_matchings math_ops datetime_ops \
     functions functors objects modules loader typeof_ops \
@@ -190,6 +190,7 @@ case "${opt}" in
     gen ".go"     "$work_dir/golang/practice"
     gen ".cc"     "$work_dir/cc/practice"
     gen ".c"      "$work_dir/c/practice"
+    gen ".m"      "$work_dir/ios/practice"
 
     gen ".fs"     "$work_dir/dotnet/practice_fs" 
     gen ".cs"     "$work_dir/dotnet/practice" 

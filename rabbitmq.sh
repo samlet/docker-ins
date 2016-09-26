@@ -14,6 +14,7 @@ if [ $# -lt 1 ]; then
 	exit 0
 fi
 
+EXEC="docker exec -it $INSTANCE"
 opt=$1
 
 case "${opt}" in
@@ -29,6 +30,10 @@ case "${opt}" in
 			-e RABBITMQ_ERLANG_COOKIE='secret cookie here' \
 			-p 5672:5672 \
 			-d $IMAGE
+	;;
+
+	"bindings" )
+		$EXEC rabbitmqctl list_bindings
 	;;
 
 	* ) 

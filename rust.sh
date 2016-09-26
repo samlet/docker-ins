@@ -56,6 +56,12 @@ case "${opt}" in
 
 	;;
 
+	"install" )
+		# https://www.rust-lang.org/en-US/downloads.html
+		# An easy way to install the stable binaries for Linux and Mac is to run this in your shell:
+		curl -sSf https://static.rust-lang.org/rustup.sh | sh
+	;;
+
 	"repl" )
 		if docker start $INSTANCE > /dev/null; then
 			$EXEC redis-cli

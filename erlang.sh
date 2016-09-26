@@ -1,17 +1,20 @@
 #!/bin/bash
 
-# ref: https://hub.docker.com/_/erlang/
+# refs: 
+# 	https://hub.docker.com/_/erlang/
+# 	https://hub.docker.com/_/elixir/
 set -e
 
 
 INSTANCE=${INSTANCE:-"erlang-dev"}
-IMAGE=${IMAGE:-"erlang:19"}
+# the image is elixir-1.3.2 with erlang 19
+IMAGE=${IMAGE:-"elixir:1.3.2"}
 WORKDIR=${WORKDIR:-"/works/erlang"}
 
 EXEC="docker exec -it $INSTANCE"
 
 ########################
-# erlang container
+# erlang&elixir container
 ########################
 
 if [ $# -lt 1 ]; then	
@@ -31,8 +34,10 @@ case "${opt}" in
     ;;
 
     "init" )
+		docker volume create --name erlang.root
 		docker run -it --net=dev-net --name $INSTANCE \
 			-h erlang.local \
+			-v erlang.root:/root \
 			-v $HOME/works:/works \
 			-w $WORKDIR \
 		 	$IMAGE bash
@@ -43,15 +48,11 @@ case "${opt}" in
 			$EXEC erl -name snode@erlang.local
 		fi
 	;;
-
-	"docker.run" )
+	"repl.elixir" )
 		if docker start $INSTANCE > /dev/null; then
-			if [ $# -gt 1 ]; then	
-				section=$2
-				$EXEC escript $section
-			fi
+			$EXEC iex --name snode@erlang.local
 		fi
-	;;
+	;;	
 
 	"help" )
 		if [ $# -gt 1 ]; then	
@@ -74,6 +75,15 @@ case "${opt}" in
 		fi
 	;;
 
+	"docker.run" )
+		if docker start $INSTANCE > /dev/null; then
+			if [ $# -gt 1 ]; then	
+				section=$2
+				$EXEC escript $section
+			fi
+		fi
+	;;
+	
 	"run" )
 		topdir=$HOME/works/erlang/practice
 		if [ $# -gt 1 ]; then	

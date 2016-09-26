@@ -2,9 +2,12 @@
 
 set -e
 if [ $# -lt 1 ]; then	
-	echo "assign a command"
+	echo "assign a command, available commands:"
+	echo "dangling, vol.tool [image]"
 	exit -1
 fi
+
+docker_ins=$HOME/bin/docker-ins
 
 CMD=$1
 case "$CMD" in
@@ -26,6 +29,26 @@ case "$CMD" in
 		else
 			echo "use: volumes backup container-name volumn-folder-name"
 		fi
+		;;
+
+	"vol.tool")
+		image="nile/dev"
+		if [ $# -gt 1 ]; then	
+			image=$2						
+		fi
+		echo "use image $image perform operators ..."
+		docker volume create --name vol.tool
+		# use this container to perform copy operators
+		# 要使用这个工具卷, 只需要: -v vol.tool:/opt/tool
+		docker run --rm -it \
+				--net=dev-net \
+				-v $docker_ins:/docker-ins \
+				-v $HOME/works:/works \
+				-v $HOME/tools:/tools \
+				-v vol.tool:/opt/tool \
+				-v $(pwd):/app \
+				-w /app \
+				$image bash
 		;;
 	*)
 		docker volume ls
