@@ -22,6 +22,7 @@ gen(){
   mkdir -p micros ffi
   # loader 用于指示在REPL上加载脚本
   for script in practice primitive_types basic flows strings regex_procs \
+    grammar null_ops enum_ops \
     buffers converters encoding_ops \
     collections comprehensions reflection_ops \
     pattern_matchings math_ops datetime_ops \
@@ -173,6 +174,7 @@ case "${opt}" in
     gen ".java"   "$work_dir/java/practice" 
     gen ".scala"  "$work_dir/scala/scripts" 
     gen ".clj"    "$work_dir/clojure/practice" 
+    gen ".kt"   "$work_dir/kotlin/practice" 
 
     gen ".ml"     "$work_dir/ocaml/practice" 
     gen ".hs"     "$work_dir/haskell/practice" 

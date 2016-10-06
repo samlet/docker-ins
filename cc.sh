@@ -54,6 +54,15 @@ case "${opt}" in
 
 	;;
 
+	"list.includes" )
+		ls $HOME/caches/include
+	;;
+
+	"vm.ps" )
+		eval $(docker-machine env master)
+		docker ps
+	;;
+
 	"repl" )
 		$HOME/works/cc/cling_2016-08-23_mac1011/bin/cling
 	;;
@@ -84,6 +93,13 @@ case "${opt}" in
 		if [ $# -gt 1 ]; then	
 			topdir=$HOME/works/cc/practice
 			section=$2
+
+			if [[ -e "build.sh" && -e "exec.sh" ]]; then
+				curpath=$(pwd)
+				echo "exec with vm in $curpath ..."
+				exec cc.sh vm.cmake $curpath
+				exit 0
+			fi
 
 			file=CMakeLists.txt
 			if [ -e "$file" ]; then
@@ -130,6 +146,23 @@ case "${opt}" in
 
 			cd ..
 			bash ./exec.sh
+		fi
+	;;
+
+	"vm.cmake" )
+		# exec basic.c: $ cc.sh vm.cmake $(pwd)
+		if [ $# -gt 1 ]; then				
+			echo "execute cmake in master vm ..."
+			full_path=$2
+			docker_path=${full_path/#${HOME}/}
+
+			eval $(docker-machine env master)
+			cmd="cd $docker_path ; bash build.sh && \
+						bash exec.sh \
+					"
+			if docker restart $INSTANCE > /dev/null; then
+				docker exec -i $INSTANCE sh -c "$cmd"
+			fi
 		fi
 	;;
 

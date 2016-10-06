@@ -98,6 +98,17 @@ case "$CMD" in
 			echo "use: volumes backup container-name volumn-folder-name"
 		fi
 		;;
+
+
+	"docker.create")
+		if [ $# -gt 1 ]; then	
+			vmname=$2
+			echo "create docker vm $vmname ..."
+			docker-machine create --engine-registry-mirror=https://y5q5tgic.mirror.aliyuncs.com --vmwarefusion-disk-size=40000 --vmwarefusion-memory-size=4096 -d vmwarefusion $vmname
+
+		fi
+		;;
+
 	*)
 		echo "no such command: $CMD"
 		echo "available commands: start, stop, reboot, list, list.procs, mount.list, mount, umount, exec, +local, share.browse"

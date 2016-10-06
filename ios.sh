@@ -9,10 +9,12 @@ fi
 CMD=$1
 case "$CMD" in
 	"run.objc")		
-		if [ $# -gt 1 ]; then	
+		if [ $# -gt 1 ]; then				
 			program=$2
+			echo "compile $program with clang ..."
 			clang -framework Foundation $program.m -o $program
 			./$program
+			rm ./$program
 		fi
 		;;
 
@@ -45,12 +47,22 @@ case "$CMD" in
 		# for swift
 		# run with: ios.sh pods.launcher objective_sugar.swift
 		if [ $# -gt 1 ]; then	
-			echo "build and run test with pods ..."
+			echo "build and run program with pods ..."
 			top_dir=$HOME/works/swift/practice
 			program=$2
-			cp $program $top_dir/cocoapods/pods_launcher/pods_launcherTests/pods_launcherTests.swift
-			cd $top_dir/cocoapods/pods_launcher
-			bash ./run-tests.sh
+
+			parent=${PWD##*/}
+
+			if [[ $parent == ios ]] ; then
+				echo "execute as form."
+				cp $program $top_dir/cocoapods/pods_launcher/pods_launcher/Forms.swift
+				cd $top_dir/cocoapods/pods_launcher
+				bash ./all.run
+			else
+				cp $program $top_dir/cocoapods/pods_launcher/pods_launcherTests/pods_launcherTests.swift
+				cd $top_dir/cocoapods/pods_launcher
+				bash ./run-tests.sh
+			fi
 		fi
 		;;
 
@@ -85,6 +97,27 @@ case "$CMD" in
 		if [ $# -gt 1 ]; then	
 			proj=$2
 			xcodebuild test -workspace $proj.xcworkspace -scheme $proj -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.0'
+		fi
+		;;
+
+	"build.ios")
+		if [ $# -gt 1 ]; then	
+			proj=$2
+
+			xcrun xcodebuild -workspace $proj.xcworkspace \
+			  -scheme $proj \
+			  -configuration Debug \
+			  -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.0' \
+			  -derivedDataPath './build' \
+			  build
+		fi
+		;;
+
+	"run.ios")
+		if [ $# -gt 1 ]; then	
+			app=$2
+			# app=./build/Build/Products/Debug-iphonesimulator/pods_launcher.app
+			ios-sim launch $app --devicetypeid "iPhone-7, 10.0" 
 		fi
 		;;
 

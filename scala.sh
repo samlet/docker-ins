@@ -129,12 +129,27 @@ case "${opt}" in
 	;;
 
 	"run.stub" )
+		# 使用scala sbt来运行指定的源文件, 如果parent folder starts with "_", 则将复制目录下所有的源文件至scala/module目录下
+		
 		topdir=$HOME/works/scala/scripts
 		if [ $# -gt 1 ]; then	
 			section=$2
-			echo "compile and run ${section}.scala ..."
-			cp ${section}.scala $topdir/macros/src/main/scala/main.scala
-			cp helper*.scala $topdir/macros/src/main/scala/
+			# printf '%s\n' "${PWD##*/}"
+			parent=${PWD##*/}
+
+			if [[ $parent == _* ]] ; then
+				echo "copy module sources and build ..."
+				# remove single main file
+				rm -f $topdir/macros/src/main/scala/main.scala
+				rm -rf $topdir/macros/src/main/scala/module/*
+				cp -r * $topdir/macros/src/main/scala/module/
+			else
+				echo "compile and run ${section}.scala ..."
+				rm -rf $topdir/macros/src/main/scala/module/*
+				cp ${section}.scala $topdir/macros/src/main/scala/main.scala
+				# cp helper*.scala $topdir/macros/src/main/scala/
+			fi
+			
 			cd $topdir/macros
 			sbt -no-colors run
 		fi

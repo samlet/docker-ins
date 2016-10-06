@@ -128,7 +128,7 @@ case "${opt}" in
 			kill `jps | grep Launcher | cut -f1 -d" "`  > /dev/null 2>&1
 
 			section=$2
-			echo "compile and run ${section}.java ..."
+			echo "compile and run ${section}.java with maven ..."
 			cp ${section}.java $topdir/deps.maven/src/main/java/exec/Main.java
 			cd $topdir/deps.maven
 			mvn --quiet compile exec:java -Dexec.mainClass="exec.Main"
@@ -146,6 +146,20 @@ case "${opt}" in
 			cp ${section}.java $topdir/deps.gradle/src/main/java/exec/Main.java
 			cd $topdir/deps.gradle
 			gradle run
+		fi
+	;;
+
+	"run.kotlin" )		
+		topdir=$HOME/works/kotlin/practice
+		if [ $# -gt 1 ]; then	
+			echo "kill old process ..."
+			kill `jps | grep GradleMain | cut -f1 -d" "`  > /dev/null 2>&1
+
+			section=$2
+			echo "compile and run ${section}.kt with gradle ..."
+			cp ${section}.kt $topdir/stub/src/main/kotlin/Main.kt
+			cd $topdir/stub
+			./gradlew run
 		fi
 	;;
 

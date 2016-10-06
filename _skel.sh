@@ -2,19 +2,19 @@
 
 set -e
 if [ $# -lt 1 ]; then	
-	echo "assign a command"
+	echo "assign a command, available commands: init, install, run, ..."
 	exit -1
 fi
 
 CMD=$1
 case "$CMD" in
-	"dangling")		
+	"init")		
 		# docker volume ls -f dangling=true		
 		;;
-	"sample")
+	"install")
 		# 
 		;;	
-	"backup")
+	"run")
 		if [ $# -gt 2 ]; then	
 			echo "backup ..."
 		else
