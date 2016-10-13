@@ -15,10 +15,11 @@ case "$CMD" in
 		# 
 		;;	
 	"run")
-		if [ $# -gt 2 ]; then	
-			echo "backup ..."
+		if [ $# -gt 1 ]; then	
+			target=$2
+			echo "run $target ..."
 		else
-			echo "use: volumes backup container-name volumn-folder-name"
+			echo "use: ...."
 		fi
 		;;
 	*)

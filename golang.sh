@@ -68,6 +68,7 @@ case "${opt}" in
 
 	"run" )
 		# golang
+		
 		if [ $# -gt 1 ]; then	
 			program=$2
 			killall $program > /dev/null 2>&1
