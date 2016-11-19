@@ -92,6 +92,14 @@ case "${opt}" in
 			python3 ${section}.py			
 		fi
 	;;
+
+	"run.virtualenv")
+		if [ $# -gt 1 ]; then
+			section=$2
+			echo "compile and run ${section} with virtualenv ..."
+			./bin/python ${section}			
+		fi
+	;;
 	
 	"practice" )
 		# top_dir=/works/python/practice/v3

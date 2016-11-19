@@ -139,6 +139,24 @@ case "${opt}" in
 			docker logs -f $container_name
 		fi
 	;;
+
+	"create" )
+		if [ $# -gt 1 ]; then				
+			section=$2
+
+			if [ -d "$section" ]; then
+				echo "directory $section has exists."
+			else
+				echo "create project $section ..."
+				mkdir $section				
+				cd $section
+				create-php-dockerfile.sh
+				echo "done."
+			fi
+		else
+			echo "php.sh create <project-name>"
+		fi				
+	;;
 	
 	"help" )
 		if [ $# -gt 1 ]; then	

@@ -106,6 +106,13 @@ case "${opt}" in
 		fi
 	;;
 
+	"ibm.docker")
+		# https://github.com/IBM-Swift/swift-ubuntu-docker
+		docker run --net=dev-net --privileged --rm -it \
+			-v $(pwd):/app -w /app \
+		 	ibmcom/swift-ubuntu:latest  /bin/bash
+	;;
+
 	"help" )
 		if [ $# -gt 1 ]; then	
 			section=$2

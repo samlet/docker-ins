@@ -1,0 +1,57 @@
+#!/bin/bash
+set -e
+
+if [ $# -gt 0 ]; then
+  target=$1
+  if [ -d "$target" ]; then
+  	cd $target
+
+  	# gradle
+  	if [ -f "build.gradle" ]; then
+  		echo "a java gradle project"
+  		gradle fatJar
+
+  	# maven
+  	elif [ -f "pom.xml" ]; then
+  		if [ -f "package.sh" ]; then
+  			bash package.sh
+  		else
+  			echo "do [mvn package] ..."
+  			mvn package
+  		fi
+
+  	# scala sbt
+  	elif [ -f "build.sbt" ]; then
+  		sbt assembly
+
+  	# python
+  	elif [ -f "requirements.txt" ]; then
+  		echo "a python project"
+  	fi
+  	
+  	cd ..
+  fi
+
+  if [ -f "docker-compose.yml" ]; then
+	  docker-compose build $target
+
+	  if [ $# -gt 1 ]; then
+	  	echo -n "build ok, skip run, "
+
+	  	opt=$2
+			case "${opt}" in
+			    "--skip")						
+						echo "opt is ${opt}"
+						;;
+					*)
+						echo "unknown opt: ${opt}"
+						;;
+			esac
+	  else
+	  	docker-compose up $target
+	  fi
+	else 
+		echo "docker-compose.yml not exists."
+	fi
+fi
+

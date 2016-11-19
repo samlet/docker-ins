@@ -4,7 +4,7 @@ set -e
 
 
 INSTANCE=${INSTANCE:-"some-cassandra"}
-IMAGE=${IMAGE:-"cassandra:3.5"}
+IMAGE=${IMAGE:-"cassandra:3.9"}
 WORKDIR=${WORKDIR:-"/works"}
 
 EXEC="docker exec -it $INSTANCE"
@@ -23,27 +23,43 @@ opt=$1
 
 case "${opt}" in
     "new" )
-        docker run -it --rm --net=dev-net \
+        docker run -itd --net=dev-net --name cassandra_1 \
+        	-p 7000:7000 -p 7001:7001 -p 7199:7199 \
+			-p 9160:9160 -p 9042:9042 \
         	-v $HOME/works:/works \
-        	$IMAGE bash
+        	$IMAGE 
+        docker logs -f cassandra_1
         exit
     ;;
+
+    "remove" )
+		docker stop cassandra_1
+		docker rm cassandra_1
+	;;
 
     "init" )
 		## https://hub.docker.com/_/cassandra/
 
 		## port, net, name, volume
 
+		# 7000: intra-node communication
+		# 7001: TLS intra-node communication
+		# 7199: JMX
+		# 9042: CQL
+		# 9160: thrift service
+
 		## use volume instead of a folder, for privillege problem, 
 		## the data folder need cassandra:cassandra privillege
 		docker volume create --name cassandra-volume
 		# $ docker volume create -d flocker --name my-named-volume -o size=20GB
 		docker run --net=dev-net --name $INSTANCE \
-			-p 7000:7000 \
+			-p 7000:7000 -p 7001:7001 -p 7199:7199 \
+			-p 9160:9160 -p 9042:9042 \
 			-v $HOME/works:/works \
 			-v cassandra-volume:/var/lib/cassandra \
 			-d $IMAGE
 
+		docker logs -f $INSTANCE
 
 		# Make a cluster
 		# $ docker run --name some-cassandra2 -d -e CASSANDRA_SEEDS="$(docker inspect --format='{{ .NetworkSettings.IPAddress }}' some-cassandra)" cassandra:tag
@@ -68,7 +84,16 @@ case "${opt}" in
 		echo "start a backend ..."
 	;;
 
-	"tests.create" )
+	"s" )
+		docker start $INSTANCE
+		docker logs -f $INSTANCE
+	;;
+
+	"stop" )
+		docker stop $INSTANCE
+	;;
+
+	"seeds" )
 		$EXEC cqlsh -e "CREATE KEYSPACE mykeyspace \
 			WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 }; \
 			USE mykeyspace; \
@@ -83,18 +108,26 @@ case "${opt}" in
 			INSERT INTO users (user_id,  fname, lname) \
 			  VALUES (1744, 'john', 'doe'); \
 			INSERT INTO users (user_id,  fname, lname) \
-			  VALUES (1746, 'john', 'smith'); \
-			  "
+			  VALUES (1746, 'john', 'smith'); "
 
 	;;
 
-	"tests.query" )
+	"seeds.query" )
 		$EXEC cqlsh -e "use mykeyspace; select * from users;"
 	;;
 
-	"tests.index" )
+	"seeds.index" )
 		$EXEC cqlsh -e "use mykeyspace; CREATE INDEX ON users (lname); \
 			SELECT * FROM users WHERE lname = 'smith';"
+	;;
+
+	"ruby" )
+		
+	;;
+
+	"python" )
+		python_exec=$HOME/works/python/practice/cassandra_procs/bin/python
+		exec $python_exec
 	;;
 
 	* ) 

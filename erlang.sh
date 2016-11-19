@@ -75,6 +75,13 @@ case "${opt}" in
 		fi
 	;;
 
+	"create.elixir" )
+		if [ $# -gt 1 ]; then	
+			section=$2
+			mix new $section
+		fi
+	;;
+
 	"docker.run" )
 		if docker start $INSTANCE > /dev/null; then
 			if [ $# -gt 1 ]; then	
@@ -108,6 +115,7 @@ case "${opt}" in
 	"build" )
 		rebar3 compile
 	;;
+
 
 	* ) 
 		echo "available options: new, init" 

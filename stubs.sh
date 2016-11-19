@@ -214,6 +214,7 @@ case "${opt}" in
       done
 
       write_readme "$dbtype" "$dbtype/docker-ins/README.md"
+      mkdir -p $dbtype/projects
     done
   ;;
 
@@ -225,6 +226,8 @@ case "${opt}" in
         echo "create folder $folder"
         mkdir -p $folder
       done
+
+      mkdir -p $mqtype/projects
     done
   ;;
 
@@ -238,8 +241,16 @@ case "${opt}" in
         mkdir -p $folder
         write_batch $folder/$manage.sh
       done
+
+      mkdir -p $interact/projects
     done
 
+  ;;
+
+  "fund.all")
+    stubs.sh db
+    stubs.sh mq
+    stubs.sh world.base
   ;;
 
   "compose")

@@ -54,6 +54,10 @@ case "${opt}" in
 		fi
 	;;
 
+	"alpine.version")
+		docker run --rm mhart/alpine-node node --version
+	;;
+
 	* ) 
 		echo "available options: new, init" 
 		echo "unknown: " $*

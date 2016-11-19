@@ -172,6 +172,54 @@ case "${opt}" in
 		fi
 	;;
 
+	"create")
+		if [ $# -gt 1 ]; then				
+			section=$2
+			echo "create project $section ..."
+			mkdir $section
+			cd $section
+			gradle init --type java-library
+			./gradlew build
+		fi
+	;;
+
+	"create.docker")
+		if [ $# -gt 1 ]; then				
+			section=$2
+			echo "create project $section ..."
+			mkdir $section
+			cd $section
+			gradle init --type java-library
+			create-java-dockerfile.sh
+			./gradlew build
+		fi
+	;;
+
+	"create.scala")
+		if [ $# -gt 1 ]; then				
+			section=$2
+			echo "create project $section ..."
+			mkdir $section
+			cd $section
+			gradle init --type scala-library
+		fi		
+	;;
+
+	"create.compose")
+		if [ $# -gt 1 ]; then				
+			section=$2
+
+			if [ -d "$section" ]; then
+				echo "directory $section has exists."
+			else
+				echo "create docker-compose $section ..."
+				cp -r ~/works/java/practice/micros-skel $section
+				cd $section
+				echo "done."
+			fi
+		fi
+	;;
+
 	* ) 
 		echo "available options: new, init, repl, deps, help" 
 		echo "unknown: " $*

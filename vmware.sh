@@ -101,11 +101,18 @@ case "$CMD" in
 
 
 	"docker.create")
+		# vmware docker.create hadoop 8192
 		if [ $# -gt 1 ]; then	
 			vmname=$2
+			memory_size=4096
+			if [ $# -gt 2 ]; then	
+				memory_size=$3
+			fi
 			echo "create docker vm $vmname ..."
-			docker-machine create --engine-registry-mirror=https://y5q5tgic.mirror.aliyuncs.com --vmwarefusion-disk-size=40000 --vmwarefusion-memory-size=4096 -d vmwarefusion $vmname
-
+			docker-machine create --engine-registry-mirror=https://y5q5tgic.mirror.aliyuncs.com --vmwarefusion-disk-size=40000 --vmwarefusion-memory-size=$memory_size -d vmwarefusion $vmname
+		else
+			echo "usage: vmware.sh docker.create <vm-name>"
+			echo "example: vmware.sh docker.create hadoop 8192"
 		fi
 		;;
 

@@ -63,7 +63,7 @@ case "${opt}" in
 		open "http://localhost:50070/explorer.html"
 	;;
 
-	"help" )
+	"help" )		
 		if [ $# -gt 1 ]; then	
 			section=$2
 			echo "help $section"
@@ -71,6 +71,12 @@ case "${opt}" in
 			open "https://github.com/kiwenlau/hadoop-cluster-docker"
 			open "http://kiwenlau.com/2016/06/12/160612-hadoop-cluster-docker-update/"
 		fi
+	;;
+
+	"refs")
+		echo "
+		  1. hive.sh hadoop.ls
+		"
 	;;
 
 	* ) 

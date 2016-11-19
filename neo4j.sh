@@ -49,6 +49,12 @@ case "${opt}" in
 		open http://localhost:7474
 	;;
 
+	"spark.insts")
+		folder="$HOME/works/docker/neo4j/neo4j-mazerunner"
+		echo "[$folder]"
+		bash ${folder}/cheat-sheets.sh
+	;;
+
 	* ) 
 		echo "available options: new, init" $*
 	;;

@@ -4,8 +4,6 @@ set -e
 
 INSTANCE=some-postgres
 
-
-
 # local x
 if [ $# -lt 1 ]; then	
 	if docker start $INSTANCE > /dev/null; then
@@ -121,6 +119,21 @@ else
 			docker exec -it $INSTANCE psql -U $USER
 		;;
 
+		"bash" )
+			# 使用postgres登入, 就可以使用createdb, dropdb等操作
+			docker exec -it --user=postgres $INSTANCE bash
+		;;
+
+		"bottledwater")
+			echo "enter ~/works/postgres/bottledwater-pg"
+			echo "and use ./dockerize to manage it"
+			echo "
+				1. ./dockerize start
+				2. ./dockerize bottled
+				3. ./dockerize psql
+				4. ./dockerize consumer
+			"
+		;;
 	    * ) 
 			echo "available options: create, init, repl" 
 			echo "unknown: " $*

@@ -21,7 +21,6 @@ fi
 
 incl_dir="$(dirname "$0")"
 docker_ins=$HOME/bin/docker-ins
-ubuntu_container=c.ubuntu
 
 opt=$1
 
@@ -65,55 +64,6 @@ case "${opt}" in
 		docker stop $INSTANCE
 	;;
 
-
-	"c.init" )
-		image="ubuntu:16.04"
-		docker run --name=$ubuntu_container -it \
-				--net=dev-net \
-				-v $HOME/works:/works \
-				-v $HOME/bin/docker-ins:/docker-ins \
-				-v $HOME/works/ubuntu/xenial/in-docker.list:/etc/apt/sources.list \
-				-w /works \
-				$image bash
-	;;
-
-	"c.enter" )
-		docker start -i $ubuntu_container
-	;;
-
-	"c.exec" )
-		# exec basic.c: $ cc.sh c.exec basic $(pwd)
-		if [ $# -gt 2 ]; then	
-			program=$2
-			full_path=$3
-			docker_path=${full_path/#${HOME}/}
-
-			cmd="cd $docker_path ; \
-				gcc -std=c11 -pthread $program.c -o $program && \
-				./$program \
-				"
-			if docker restart $ubuntu_container > /dev/null; then
-				docker exec -i $ubuntu_container sh -c "$cmd"
-			fi
-		fi
-	;;
-
-	"c.single" )
-		if [ $# -gt 1 ]; then	
-			program=$2
-			container_name="go.$program"
-			docker rm -f $container_name > /dev/null
-			docker run -d \
-				--name=$container_name \
-				--net=dev-net \
-				-v $(pwd):/app \
-				-w /app \
-				golang:1.7 sh -c "go build $program.go && \
-					./$program \
-				"
-			docker logs -f $container_name
-		fi
-	;;
 	
 	"help" )
 		if [ $# -gt 1 ]; then	

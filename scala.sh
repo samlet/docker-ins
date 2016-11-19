@@ -164,6 +164,25 @@ case "${opt}" in
 		fi
 	;;
 
+	"create" )
+		# exec sbt-create.sh
+		if [ $# -gt 1 ]; then				
+			section=$2
+
+			if [ -d "$section" ]; then
+				echo "directory $section has exists."
+			else
+				echo "create project $section ..."
+				mkdir $section				
+				cd $section
+				sbt-create.sh
+				echo "done."
+			fi
+		else
+			echo "scala.sh create <project-name>"
+		fi
+	;;
+
 	* ) 
 		echo "available options: new, init, repl, deps, help" 
 		echo "unknown: " $*
